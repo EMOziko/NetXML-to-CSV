@@ -26,7 +26,7 @@ def run():
 
             print "[+] Parsing '%s'." % input_file_name
             sys.stdout.write("[+] Outputting to '%s' " % output_file_name)
-            output.write("BSSID,Channel,Privacy,Ciper,Auth,Power,ESSID,Lat,Lon\n")
+            output.write("BSSID,Channel,Privacy,Ciper,Auth,WPS,Power,ESSID,Lat,Lon\n")
             result, clients = parse_net_xml(doc)
             output.write(result)
             output.write("\n")
@@ -76,6 +76,16 @@ def parse_net_xml(doc):
                 elif item.text == "None":
                     privacy = "OPN"
 
+        wpscheck = network.getiterator('wps') 
+        wps = ""
+        if wpscheck is not None:
+            for item in wpscheck:
+                if item.text == ('No'):
+                    wps = 'NO'
+                else:
+                    wps = ('YES')
+
+
         cipher = cipher.strip()
 
         if cipher.find("CCMP") > -1:
@@ -107,8 +117,8 @@ def parse_net_xml(doc):
             lat = network.find('gps-info').find('avg-lat').text
             lon = network.find('gps-info').find('avg-lon').text
 
-        # print "%s,%s,%s,%s,%s,%s,%s\n" % (bssid, channel, privacy, cipher, auth, dbm, essid_text)
-        result += "%s,%s,%s,%s,%s,%s,%s,%s,%s\n" % (bssid, channel, privacy, cipher, auth, dbm, essid_text, lat, lon)
+        #print "%s,%s,%s,%s,%s,%s,%s,%s\n" % (bssid, channel, privacy, cipher, auth, dbm, essid_text)
+        result += "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n" % (bssid, channel, privacy, cipher, auth, wps, dbm, essid_text, lat, lon)
 
         c_list = associatedClients(network, bssid, essid_text)
         if c_list is not None:
